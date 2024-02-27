@@ -1,0 +1,35 @@
+{
+    "mehs": {
+        "f24":{
+            "key": "f24",
+            "can_toggle": true
+        },
+        "f24+shift":{
+            "key": "f24+shift",
+            "can_toggle": false
+        }
+    },
+    "key_press_delay": 0,
+    "hotkeys": {
+        "d": {
+            "title": "Code",
+            "path": "C:\\Users\\kanno\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe"
+        },
+        "g": {
+            "title": "Chrome",
+            "path": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
+        },
+        "w": {
+            "title": "Veerum",
+            "path": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
+        },
+        "f": {
+            "title": "Explorer",
+            "path": "C:\\Windows\\explorer.exe"
+        },
+        "t": {
+            "title": "Discord",
+            "path": "C:\\Users\\kanno\\AppData\\Local\\Discord\\Update.exe"
+        }
+    }
+}
