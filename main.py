@@ -8,20 +8,19 @@ with open('config.json') as json_file:
     config = json.load(json_file)
 
 pyautogui.PAUSE = config['key_press_delay']
-meh_data = config['mehs']
-for meh_key in meh_data:
-    meh = meh_data[meh_key]
-    meh['len'] = len(meh_key.split('+'))
-    meh['split'] = meh_key.split('+')
-    meh['is_pressed'] = False
+meh = config['meh']
+meh_len = len(meh)
+meh_split = meh.split('+')
+global meh_is_pressed
+globals()['meh_is_pressed'] = False
+meh_can_toggle = config['can_toggle']
 hotkeys = config['hotkeys']
 
 keys = []
 meh_keys = []
-for meh_key in meh_data:
-    meh = meh_data[meh_key]
-    keys.extend(meh['split'])
-    meh_keys.extend(meh['split'])
+
+keys.extend(meh_split)
+meh_keys.extend(meh_split)
 
 for key in hotkeys.keys():
     keys.append(key)
@@ -31,10 +30,8 @@ meh_keys = list(set(meh_keys))
 
 
 def release_meh():
-    for meh_key in meh_data:
-        meh = meh_data[meh_key]
-        for key in meh['split']:
-            pyautogui.keyUp(key)
+    for key in meh_split:
+        pyautogui.keyUp(key)
 
 
 def hotkey_pressed(hot_key, process):
@@ -45,7 +42,6 @@ def hotkey_pressed(hot_key, process):
 
     windows = pyautogui.getWindowsWithTitle(process['title'])
 
-    print(windows)
     if len(windows) > 0:
         for window in windows:
             try:
@@ -57,17 +53,10 @@ def hotkey_pressed(hot_key, process):
         subprocess.Popen(process['path'])
 
 
-def any_meh_pressed():
-    for meh_key in meh_data:
-        if meh_pressed(meh_data[meh_key]):
-            return True
-    return False
-
-
-def meh_pressed(meh):
-    if meh['can_toggle'] and meh['is_pressed']:
+def meh_pressed():
+    if meh_can_toggle and meh_is_pressed:
         return True
-    for key in meh['split']:
+    for key in meh_split:
         if not keyboard.is_pressed(key):
             return False
     return True
@@ -80,13 +69,12 @@ def key_pressed(KeyboardEvent):
     if key in meh_keys:
         return
 
-    if not any_meh_pressed():
+    if not meh_pressed():
         return
 
     hotkey_pressed(key, hotkeys[key])
-    for meh_key in meh_data:
-        meh = meh_data[meh_key]
-        meh['is_pressed'] = False
+    for key in meh_split:
+        globals()['meh_is_pressed'] = False
 
 
 def key_released(KeyboardEvent):
@@ -95,9 +83,9 @@ def key_released(KeyboardEvent):
     if key not in meh_keys:
         return
 
-    if not meh_data[key]['can_toggle']:
+    if not meh_can_toggle:
         return
-    meh_data[key]['is_pressed'] = not meh_data[key]['is_pressed']
+    globals()['meh_is_pressed'] = not globals()['meh_is_pressed']
 
 
 for key in keys:

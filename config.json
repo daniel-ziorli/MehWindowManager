@@ -1,15 +1,7 @@
 {
-    "mehs": {
-        "f24":{
-            "key": "f24",
-            "can_toggle": true
-        },
-        "f24+shift":{
-            "key": "f24+shift",
-            "can_toggle": false
-        }
-    },
-    "key_press_delay": 0,
+    "meh": "right shift",
+    "can_toggle": true,
+    "key_press_delay": 0.05,
     "hotkeys": {
         "d": {
             "title": "Code",
