@@ -1,8 +1,8 @@
 {
-    "debug": false,
-    "meh": "right shift",
+    "debug": true,
     "can_toggle": true,
-    "key_press_delay": 0.01,
+    "reset_toggle": true,
+    "meh": "<f20>",
     "hotkeys": {
         "d": {
             "title": "Code",

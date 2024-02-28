@@ -1,40 +1,32 @@
 import json
 import keyboard
 import subprocess
-import pyautogui
 import pywinctl as pwc
+from pynput import keyboard
+from pynput.keyboard import Key, Controller
 
 config = {}
 with open('config.json') as json_file:
     config = json.load(json_file)
 
-global meh_is_pressed, hooks
-globals()['meh_is_pressed'] = False
-globals()['hooks'] = []
+global key_listener, is_meh_pressed, ignore_toggle_release
+globals()['is_meh_pressed'] = False
+globals()['ignore_toggle_release'] = False
 
-pyautogui.PAUSE = config['key_press_delay']
 meh = config['meh']
-meh_split = meh.split('+')
-meh_len = len(meh_split)
-meh_can_toggle = config['can_toggle']
 hotkeys = config['hotkeys']
+debug = config['debug']
+can_toggle = config['can_toggle']
+reset_toggle = config['reset_toggle']
 
-keys = []
-meh_keys = []
-
-keys.extend(meh_split)
-meh_keys.extend(meh_split)
-
-for key in hotkeys.keys():
-    keys.append(key)
-
-keys = list(set(keys))
-meh_keys = list(set(meh_keys))
+for key in list(hotkeys):
+    hotkeys[keyboard.KeyCode.from_char(key)] = hotkeys[key]
+    del hotkeys[key]
 
 
-def execute_hotkey(hot_key, process):
-    pyautogui.keyUp(hot_key)
-
+def execute_hotkey(key):
+    controller.release(key)
+    process = hotkeys[key]
     windows = pwc.getWindowsWithTitle(
         process['title'],
         condition=pwc.Re.CONTAINS,
@@ -43,81 +35,79 @@ def execute_hotkey(hot_key, process):
 
     if len(windows) > 0:
         for window in windows:
-            if config['debug']:
+            if debug:
                 print(window.title)
             window.activate()
     else:
         subprocess.Popen(process['path'])
 
 
+controller = Controller()
+
+meh_key_presses = {}
+meh_parsed = keyboard.HotKey.parse(meh)
+for key in meh_parsed:
+    meh_key_presses[key] = False
+
+
 def meh_pressed():
-    if meh_can_toggle and globals()['meh_is_pressed']:
+    if can_toggle and globals()['is_meh_pressed']:
         return True
-    for key in meh_split:
-        if not keyboard.is_pressed(key):
+    for key in meh_key_presses:
+        if not meh_key_presses[key]:
             return False
     return True
 
 
-def key_pressed(KeyboardEvent):
-    key = KeyboardEvent.name.lower()
+def meh_released():
+    for key in meh_key_presses:
+        if meh_key_presses[key]:
+            return False
 
-    if key in meh_keys:
+    return True
+
+
+def suppreses_events(bool):
+    globals()['key_listener']._suppress = bool
+
+
+def on_key_press(key):
+    globals()['ignore_toggle_release'] = False
+    if debug:
+        print(key)
+
+    if key in meh_parsed:
+        meh_key_presses[key] = True
+        if meh_pressed():
+            suppreses_events(True)
         return
 
     if not meh_pressed():
         return
 
-    execute_hotkey(key, hotkeys[key])
-    globals()['meh_is_pressed'] = False
-    unhook_all()
+    if key not in hotkeys:
+        return
+
+    execute_hotkey(key)
+    if can_toggle and reset_toggle:
+        globals()['is_meh_pressed'] = False
+        globals()['ignore_toggle_release'] = True
+    suppreses_events(False)
 
 
-def meh_key_pressed(_):
+def on_key_released(key):
+    if key not in meh_parsed:
+        return
+
+    meh_key_presses[key] = False
+
+    if can_toggle and meh_released() and not globals()['ignore_toggle_release']:
+        globals()['is_meh_pressed'] = not globals()['is_meh_pressed']
+
     if not meh_pressed():
-        return
-
-    if len(globals()['hooks']) > 0:
-        return
-
-    for key in keys:
-        hook = keyboard.on_press_key(
-            key,
-            key_pressed,
-            suppress=True
-        )
-        globals()['hooks'].append(hook)
+        suppreses_events(False)
 
 
-def meh_key_released(_):
-    if not meh_can_toggle:
-        return
-
-    globals()['meh_is_pressed'] = not globals()['meh_is_pressed']
-    if globals()['meh_is_pressed']:
-        return
-    unhook_all()
-
-
-def unhook_all():
-    for hook in globals()['hooks']:
-        keyboard.unhook(hook)
-    globals()['hooks'] = []
-
-
-for key in meh_split:
-    keyboard.on_press_key(
-        key,
-        meh_key_pressed,
-    )
-    keyboard.on_press_key(
-        key,
-        meh_key_released,
-    )
-
-if config['debug']:
-    keyboard.on_press(
-        lambda x: print(x.name.lower()),
-    )
-
-keyboard.wait()
+with keyboard.Listener(on_press=on_key_press, on_release=on_key_released) as listener:
+    globals()['key_listener'] = listener
+    listener.join()
