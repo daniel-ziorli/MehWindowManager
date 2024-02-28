@@ -8,12 +8,14 @@ config = {}
 with open('config.json') as json_file:
     config = json.load(json_file)
 
+global meh_is_pressed, hooks
+globals()['meh_is_pressed'] = False
+globals()['hooks'] = []
+
 pyautogui.PAUSE = config['key_press_delay']
 meh = config['meh']
 meh_split = meh.split('+')
 meh_len = len(meh_split)
-global meh_is_pressed
-globals()['meh_is_pressed'] = False
 meh_can_toggle = config['can_toggle']
 hotkeys = config['hotkeys']
 
@@ -30,25 +32,19 @@ keys = list(set(keys))
 meh_keys = list(set(meh_keys))
 
 
-def release_meh():
-    for key in meh_split:
-        pyautogui.keyUp(key)
-
-
 def execute_hotkey(hot_key, process):
-    release_meh()
     pyautogui.keyUp(hot_key)
-    with pyautogui.hold('ctrl'):
-        pyautogui.press('z')
 
     windows = pwc.getWindowsWithTitle(
         process['title'],
         condition=pwc.Re.CONTAINS,
         flags=pwc.Re.IGNORECASE
     )
+
     if len(windows) > 0:
         for window in windows:
-            print(window.title)
+            if config['debug']:
+                print(window.title)
             window.activate()
     else:
         subprocess.Popen(process['path'])
@@ -73,29 +69,55 @@ def key_pressed(KeyboardEvent):
         return
 
     execute_hotkey(key, hotkeys[key])
-    for key in meh_split:
-        globals()['meh_is_pressed'] = False
+    globals()['meh_is_pressed'] = False
+    unhook_all()
 
 
-def key_released(KeyboardEvent):
-    key = KeyboardEvent.name.lower()
-    if key not in meh_keys:
+def meh_key_pressed(_):
+    if not meh_pressed():
         return
 
+    if len(globals()['hooks']) > 0:
+        return
+
+    for key in keys:
+        hook = keyboard.on_press_key(
+            key,
+            key_pressed,
+            suppress=True
+        )
+        globals()['hooks'].append(hook)
+
+
+def meh_key_released(_):
     if not meh_can_toggle:
         return
+
     globals()['meh_is_pressed'] = not globals()['meh_is_pressed']
+    if globals()['meh_is_pressed']:
+        return
+    unhook_all()
 
 
-for key in keys:
+def unhook_all():
+    for hook in globals()['hooks']:
+        keyboard.unhook(hook)
+    globals()['hooks'] = []
+
+
+for key in meh_split:
     keyboard.on_press_key(
         key,
-        key_pressed
+        meh_key_pressed,
+    )
+    keyboard.on_press_key(
+        key,
+        meh_key_released,
     )
 
-    keyboard.on_release_key(
-        key,
-        key_released
+if config['debug']:
+    keyboard.on_press(
+        lambda x: print(x.name.lower()),
     )
 
 keyboard.wait()

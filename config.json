@@ -1,4 +1,5 @@
 {
+    "debug": false,
     "meh": "right shift",
     "can_toggle": true,
     "key_press_delay": 0.01,
