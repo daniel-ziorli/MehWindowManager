@@ -9,8 +9,8 @@ with open('config.json') as json_file:
 
 pyautogui.PAUSE = config['key_press_delay']
 meh = config['meh']
-meh_len = len(meh)
 meh_split = meh.split('+')
+meh_len = len(meh_split)
 global meh_is_pressed
 globals()['meh_is_pressed'] = False
 meh_can_toggle = config['can_toggle']
@@ -34,7 +34,7 @@ def release_meh():
         pyautogui.keyUp(key)
 
 
-def hotkey_pressed(hot_key, process):
+def execute_hotkey(hot_key, process):
     release_meh()
     pyautogui.keyUp(hot_key)
     with pyautogui.hold('ctrl'):
@@ -44,17 +44,13 @@ def hotkey_pressed(hot_key, process):
 
     if len(windows) > 0:
         for window in windows:
-            try:
-                window.activate()
-            except:
-                window.minimize()
-                window.restore()
+            window.activate()
     else:
         subprocess.Popen(process['path'])
 
 
 def meh_pressed():
-    if meh_can_toggle and meh_is_pressed:
+    if meh_can_toggle and globals()['meh_is_pressed']:
         return True
     for key in meh_split:
         if not keyboard.is_pressed(key):
@@ -64,7 +60,6 @@ def meh_pressed():
 
 def key_pressed(KeyboardEvent):
     key = KeyboardEvent.name.lower()
-    print('pressed ' + key)
 
     if key in meh_keys:
         return
@@ -72,14 +67,13 @@ def key_pressed(KeyboardEvent):
     if not meh_pressed():
         return
 
-    hotkey_pressed(key, hotkeys[key])
+    execute_hotkey(key, hotkeys[key])
     for key in meh_split:
         globals()['meh_is_pressed'] = False
 
 
 def key_released(KeyboardEvent):
     key = KeyboardEvent.name.lower()
-    print('released ' + key)
     if key not in meh_keys:
         return
 
