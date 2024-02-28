@@ -2,6 +2,7 @@ import json
 import keyboard
 import subprocess
 import pyautogui
+import pywinctl as pwc
 
 config = {}
 with open('config.json') as json_file:
@@ -40,10 +41,14 @@ def execute_hotkey(hot_key, process):
     with pyautogui.hold('ctrl'):
         pyautogui.press('z')
 
-    windows = pyautogui.getWindowsWithTitle(process['title'])
-
+    windows = pwc.getWindowsWithTitle(
+        process['title'],
+        condition=pwc.Re.CONTAINS,
+        flags=pwc.Re.IGNORECASE
+    )
     if len(windows) > 0:
         for window in windows:
+            print(window.title)
             window.activate()
     else:
         subprocess.Popen(process['path'])
