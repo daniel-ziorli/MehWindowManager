@@ -92,7 +92,9 @@ def on_key_press(key):
     if can_toggle and reset_toggle:
         globals()['is_meh_pressed'] = False
         globals()['ignore_toggle_release'] = True
-    suppreses_events(False)
+
+    if not meh_pressed():
+        suppreses_events(False)
 
 
 def on_key_released(key):
