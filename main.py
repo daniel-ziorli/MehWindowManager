@@ -1,5 +1,5 @@
+import platform
 import json
-import time
 import keyboard
 import subprocess
 import pywinctl as pwc
@@ -10,9 +10,8 @@ config = {}
 with open('config.json') as json_file:
     config = json.load(json_file)
 
-global key_listener, is_meh_pressed, ignore_toggle_release, windows, last_window_cache
-globals()['last_window_cache'] = time.time()
-globals()['windows'] = {}
+global key_listener, is_meh_pressed, ignore_toggle_release, previous_hotkey
+globals()['previous_hotkey'] = None
 globals()['is_meh_pressed'] = False
 globals()['ignore_toggle_release'] = False
 
@@ -21,8 +20,7 @@ hotkeys = config['hotkeys']
 debug = config['debug']
 can_toggle = config['can_toggle']
 reset_toggle = config['reset_toggle']
-cache_on_start = config['cache_on_start']
-cache_rate = config['cache_rate']
+platform_name = platform.system()
 
 for key in list(hotkeys):
     hotkeys[keyboard.KeyCode.from_char(key)] = hotkeys[key]
@@ -41,29 +39,32 @@ def cache_titles():
     for title in globals()['windows'].keys():
         print(title)
 
+def execute_mac_hotkey(key):
+    process = hotkeys[key]
+    if key == globals()['previous_hotkey']:
+        controller.press(Key.cmd)
+        controller.tap('`')
+        controller.release(Key.cmd)
+    else:
+        subprocess.call(["/usr/bin/open", "-a", process['mac_path']]),
+
+    globals()['previous_hotkey'] = key
 
 def execute_hotkey(key):
-    controller.release(key)
     process = hotkeys[key]
-
-    windows = []
-    if not config['cache_on_start']:
-        cache_titles()
-
-    cached_windows = globals()['windows']
-    for title in process['titles']:
-        for window_title in cached_windows.keys():
-            if title.lower() in window_title:
-                windows.append(cached_windows[window_title])
+    windows = pwc.getWindowsWithTitle(
+        process['title'],
+        condition=pwc.Re.CONTAINS,
+        flags=pwc.Re.IGNORECASE
+    )
 
     if len(windows) > 0:
         for window in windows:
+            if debug:
+                print(window.title)
             window.activate()
-    elif 'path' in process.keys():
-        try:
-            subprocess.Popen(process['path'])
-        except FileNotFoundError:
-            print("File not found: " + process['path'])
+    else:
+        subprocess.Popen(process['path'])
 
 
 controller = Controller()
@@ -112,13 +113,11 @@ def on_key_press(key):
     if key not in hotkeys:
         return
 
-    execute_hotkey(key)
-
-    if cache_on_start and time.time() - globals()['last_window_cache'] > cache_rate:
-        if debug:
-            print(time.time() - globals()['last_window_cache'] ,"s passed, caching titles")
-        cache_titles()
-        globals()['last_window_cache'] = time.time()
+    controller.release(key)
+    if platform_name == 'Darwin':
+        execute_mac_hotkey(key)
+    else:
+        execute_hotkey(key)
 
     if can_toggle and reset_toggle:
         globals()['is_meh_pressed'] = False
@@ -140,8 +139,6 @@ def on_key_released(key):
     if not meh_pressed():
         suppress_events(False)
 
-if cache_on_start:
-    cache_titles()
 with keyboard.Listener(on_press=on_key_press, on_release=on_key_released) as listener:
     globals()['key_listener'] = listener
     listener.join()
