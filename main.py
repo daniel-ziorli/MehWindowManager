@@ -42,9 +42,9 @@ def cache_titles():
 def execute_mac_hotkey(key):
     process = hotkeys[key]
     if key == globals()['previous_hotkey']:
-        controller.press(Key.cmd)
+        controller.press(keyboard.Key.cmd)
         controller.tap('`')
-        controller.release(Key.cmd)
+        controller.release(keyboard.Key.cmd)
     else:
         subprocess.call(["/usr/bin/open", "-a", process['mac_path']]),
 
