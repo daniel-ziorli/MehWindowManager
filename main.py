@@ -41,6 +41,8 @@ def cache_titles():
 
 def execute_mac_hotkey(key):
     process = hotkeys[key]
+    if process['mac_path'] is None:
+        return
     if key == globals()['previous_hotkey']:
         controller.press(keyboard.Key.cmd)
         controller.tap('`')
