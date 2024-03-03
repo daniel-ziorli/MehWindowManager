@@ -1,28 +1,19 @@
 {
-    "debug": false,
-    "can_toggle": true,
-    "reset_toggle": true,
-    "meh": "<f20>",
-    "hotkeys": {
-        "d": {
-            "title": "Code",
-            "path": "C:\\Users\\kanno\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe"
-        },
-        "g": {
-            "title": "Google Chrome",
-            "path": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
-        },
-        "w": {
-            "title": "Veerum",
-            "path": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"
-        },
-        "f": {
-            "title": "Explorer",
-            "path": "C:\\Windows\\explorer.exe"
-        },
-        "t": {
-            "title": "Discord",
-            "path": "C:\\Users\\kanno\\AppData\\Local\\Discord\\Update.exe"
-        }
+  "debug": true,
+  "can_toggle": true,
+  "reset_toggle": true,
+  "cache_on_start": true,
+  "cache_rate": 1000,
+  "meh": "<f20>",
+  "hotkeys": {
+    "d": {
+      "titles": ["veerum-backend", "veerum-frontend"]
+    },
+    "g": {
+      "titles": ["google chrome"]
+    },
+    "w": {
+      "titles": ["missing value"]
     }
+  }
 }
