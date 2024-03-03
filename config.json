@@ -1,7 +1,8 @@
 {
-    "debug": false,
+    "debug": true,
     "can_toggle": true,
     "reset_toggle": true,
+    "toggle_timeout": 1.5,
     "meh": "<f20>",
     "hotkeys": {
         "d": {
@@ -30,6 +31,10 @@
         "u": {
             "title": "Unity",
             "path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Unity 2022.3.15f1\\Unity.exe"
+        },
+        "s": {
+            "title": "Steam",
+            "path": "C:\\Program Files (x86)\\Steam\\steam.exe"
         }
     }
 }

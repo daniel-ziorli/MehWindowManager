@@ -1,5 +1,7 @@
+from multiprocessing import Process
 import platform
 import json
+import time
 import keyboard
 import subprocess
 import pywinctl as pwc
@@ -10,21 +12,24 @@ config = {}
 with open('config.json') as json_file:
     config = json.load(json_file)
 
-global key_listener, is_meh_pressed, ignore_toggle_release, previous_hotkey
+global key_listener, is_meh_pressed, ignore_toggle_release, previous_hotkey, toggle_time
 globals()['previous_hotkey'] = None
 globals()['is_meh_pressed'] = False
 globals()['ignore_toggle_release'] = False
+globals()['toggle_time'] = time.time()
 
 meh = config['meh']
 hotkeys = config['hotkeys']
 debug = config['debug']
 can_toggle = config['can_toggle']
 reset_toggle = config['reset_toggle']
+toggle_timeout = config['toggle_timeout']
 platform_name = platform.system()
 
 for key in list(hotkeys):
     hotkeys[keyboard.KeyCode.from_char(key)] = hotkeys[key]
     del hotkeys[key]
+
 
 def cache_titles():
     globals()['windows'] = {}
@@ -39,6 +44,7 @@ def cache_titles():
     for title in globals()['windows'].keys():
         print(title)
 
+
 def execute_mac_hotkey(key):
     process = hotkeys[key]
     if process['mac_path'] is None:
@@ -51,6 +57,7 @@ def execute_mac_hotkey(key):
         subprocess.call(["/usr/bin/open", "-a", process['mac_path']]),
 
     globals()['previous_hotkey'] = key
+
 
 def execute_hotkey(key):
     process = hotkeys[key]
@@ -65,7 +72,7 @@ def execute_hotkey(key):
             if debug:
                 print(window.title)
             window.activate()
-    else:
+    elif process['path'] is not None:
         subprocess.Popen(process['path'])
 
 
@@ -103,6 +110,10 @@ def on_key_press(key):
     if debug:
         print(key)
 
+    if toggle_timeout != -1 and time.time() - globals()['toggle_time'] > toggle_timeout and globals()['is_meh_pressed']:
+        reset_meh(key)
+        return
+
     if key in meh_parsed:
         meh_key_presses[key] = True
         if meh_pressed():
@@ -113,6 +124,7 @@ def on_key_press(key):
         return
 
     if key not in hotkeys:
+        reset_meh(key)
         return
 
     controller.release(key)
@@ -129,6 +141,12 @@ def on_key_press(key):
         suppress_events(False)
 
 
+def reset_meh(key):
+    globals()['is_meh_pressed'] = False
+    suppress_events(False)
+    controller.tap(key)
+
+
 def on_key_released(key):
     if key not in meh_parsed:
         return
@@ -137,9 +155,11 @@ def on_key_released(key):
 
     if can_toggle and meh_released() and not globals()['ignore_toggle_release']:
         globals()['is_meh_pressed'] = not globals()['is_meh_pressed']
+        globals()['toggle_time'] = time.time()
 
     if not meh_pressed():
         suppress_events(False)
+
 
 with keyboard.Listener(on_press=on_key_press, on_release=on_key_released) as listener:
     globals()['key_listener'] = listener
