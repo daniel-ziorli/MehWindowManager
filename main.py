@@ -4,7 +4,7 @@ import keyboard
 import subprocess
 import pywinctl as pwc
 from pynput import keyboard
-from pynput.keyboard import Key, Controller
+from pynput.keyboard import Controller
 
 config = {}
 with open('config.json') as json_file:
