@@ -102,18 +102,15 @@ def meh_released():
     return True
 
 def darwin_intercept(event_type, event):
-    import Quartz
-    length, chars = Quartz.CGEventKeyboardGetUnicodeString(
-        event, 100, None, None)
-
     if globals()['key_listener']._suppress:
+        if not meh_pressed():
+            suppress_events(False)
         return None
     else:
         return event
 
 def suppress_events(bool):
     globals()['key_listener']._suppress = bool
-
 
 def on_key_press(key):
     globals()['ignore_toggle_release'] = False
@@ -147,7 +144,7 @@ def on_key_press(key):
         globals()['is_meh_pressed'] = False
         globals()['ignore_toggle_release'] = True
 
-    if not meh_pressed():
+    if not meh_pressed() and platform_name != 'Darwin':
         suppress_events(False)
 
 
@@ -170,7 +167,11 @@ def on_key_released(key):
     if not meh_pressed():
         suppress_events(False)
 
-
-with keyboard.Listener(on_press=on_key_press, on_release=on_key_released, darwin_intercept=darwin_intercept) as listener:
-    globals()['key_listener'] = listener
-    listener.join()
+if platform_name == 'Darwin':
+    with keyboard.Listener(on_press=on_key_press, on_release=on_key_released, darwin_intercept=darwin_intercept) as listener:
+        globals()['key_listener'] = listener
+        listener.join()
+else:
+    with keyboard.Listener(on_press=on_key_press, on_release=on_key_released) as listener:
+        globals()['key_listener'] = listener
+        listener.join()
