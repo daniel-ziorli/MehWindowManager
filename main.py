@@ -44,11 +44,12 @@ def cache_titles():
     for title in globals()['windows'].keys():
         print(title)
 
-
+    
 def execute_mac_hotkey(key):
     process = hotkeys[key]
-    if process['mac_path'] is None:
+    if 'mac_path' not in process.keys():
         return
+
     if key == globals()['previous_hotkey']:
         controller.press(keyboard.Key.cmd)
         controller.tap('`')
@@ -100,6 +101,15 @@ def meh_released():
 
     return True
 
+def darwin_intercept(event_type, event):
+    import Quartz
+    length, chars = Quartz.CGEventKeyboardGetUnicodeString(
+        event, 100, None, None)
+
+    if globals()['key_listener']._suppress:
+        return None
+    else:
+        return event
 
 def suppress_events(bool):
     globals()['key_listener']._suppress = bool
@@ -161,6 +171,6 @@ def on_key_released(key):
         suppress_events(False)
 
 
-with keyboard.Listener(on_press=on_key_press, on_release=on_key_released) as listener:
+with keyboard.Listener(on_press=on_key_press, on_release=on_key_released, darwin_intercept=darwin_intercept) as listener:
     globals()['key_listener'] = listener
     listener.join()

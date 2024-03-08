@@ -1,40 +1,40 @@
 {
-    "debug": true,
-    "can_toggle": true,
-    "reset_toggle": true,
-    "toggle_timeout": 1.5,
-    "meh": "<f20>",
-    "hotkeys": {
-        "d": {
-            "title": "Code",
-            "path": "C:\\Users\\kanno\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe",
-            "mac_path": "/Applications/Visual Studio Code.app"
-        },
-        "g": {
-            "title": "Google Chrome",
-            "path": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
-            "mac_path": "/Applications/Google Chrome.app"
-        },
-        "w": {
-            "title": "Veerum",
-            "path": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
-            "mac_path": "/Applications/Google Chat.app"
-        },
-        "f": {
-            "title": "Explorer",
-            "path": "C:\\Windows\\explorer.exe"
-        },
-        "t": {
-            "title": "Discord",
-            "path": "C:\\Users\\kanno\\AppData\\Local\\Discord\\Update.exe"
-        },
-        "u": {
-            "title": "Unity",
-            "path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Unity 2022.3.15f1\\Unity.exe"
-        },
-        "s": {
-            "title": "Steam",
-            "path": "C:\\Program Files (x86)\\Steam\\steam.exe"
-        }
+  "debug": true,
+  "can_toggle": true,
+  "reset_toggle": true,
+  "toggle_timeout": 1.5,
+  "meh": "<f20>",
+  "hotkeys": {
+    "d": {
+      "title": "Code",
+      "path": "C:\\Users\\kanno\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe",
+      "mac_path": "Visual Studio Code"
+    },
+    "g": {
+      "title": "Google Chrome",
+      "path": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+      "mac_path": "Google Chrome"
+    },
+    "w": {
+      "title": "Veerum",
+      "path": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+      "mac_path": "Google Chat"
+    },
+    "f": {
+      "title": "Explorer",
+      "path": "C:\\Windows\\explorer.exe"
+    },
+    "t": {
+      "title": "Discord",
+      "path": "C:\\Users\\kanno\\AppData\\Local\\Discord\\Update.exe"
+    },
+    "u": {
+      "title": "Unity",
+      "path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Unity 2022.3.15f1\\Unity.exe"
+    },
+    "s": {
+      "title": "Steam",
+      "path": "C:\\Program Files (x86)\\Steam\\steam.exe"
     }
+  }
 }
