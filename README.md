@@ -6,7 +6,7 @@ MehWindowManager is a Python project that provides a simple window manager, allo
 The configuration file config.json allows you to customize various aspects of MehWindowManager:
 
 ### Parameters
-**debug**: Set to true to enable debug mode, which provides additional logging information. Default is false.
+**debug**: Set to true to enable debug mode, which provides additional logging information, it's helpful for getting keycodes. Default is false.
 
 **can_toggle**: Set to true to allow toggling between windows of the same application. Default is true.
 
