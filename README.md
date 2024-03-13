@@ -7,13 +7,18 @@ The configuration file config.json allows you to customize various aspects of Me
 
 ### Parameters
 **debug**: Set to true to enable debug mode, which provides additional logging information. Default is false.
+
 **can_toggle**: Set to true to allow toggling between windows of the same application. Default is true.
+
 **reset_toggle**: Set to true to reset the toggle state after the toggle timeout. Default is true.
+
 **toggle_timeout**: Time in seconds before the toggle state resets. Default is 1.5.
+
 **meh**: Key combination to trigger a window switch.
 This program uses pynput to monitor keyboard inputs and all the valid keycodes can be found [here](https://pynput.readthedocs.io/en/latest/keyboard.html#pynput.keyboard.Key).
 You can also have a multi keycode meh by adding + between each keycode 
 `<ctrl_l>+<alt_l>+<shift_l>`
+
 **hotkeys**: Dictionary containing hotkey configurations. Each key corresponds to a single hotkey and its associated application. Pressing the meh key + the hotkey will open the given program. All the valid keycodes can be found [here](https://pynput.readthedocs.io/en/latest/keyboard.html#pynput.keyboard.Key).
 
 ## Usage
