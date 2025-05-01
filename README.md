@@ -1,6 +1,6 @@
 # MehWindowManager
 ## Description
-MehWindowManager is a Python project that provides a simple window manager, allowing you to quickly switch between different applications using custom hotkeys. The term "meh" refers to the combination of keys used to trigger the window manager, meh normally refers to Ctrl + Alt + Shift by default but can be remapped according to your preferences.
+MehWindowManager is a simple window manager, allowing you to quickly switch between different applications using custom hotkeys. The term "meh" refers to the combination of keys used to trigger the window manager, meh normally refers to Ctrl + Alt + Shift by default but can be remapped according to your preferences.
 
 ## Usage
 1. Clone MehWindowManager 
