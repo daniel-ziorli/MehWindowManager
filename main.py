@@ -1,4 +1,3 @@
-from multiprocessing import Process
 import platform
 import json
 import time
@@ -45,7 +44,7 @@ def cache_titles():
     for title in globals()['windows'].keys():
         print(title)
 
-    
+
 def execute_mac_hotkey(key):
     if (debug): print("execute_mac_hotkey")
     process = hotkeys[key]
@@ -128,6 +127,7 @@ def meh_released():
     if (debug): print("meh released")
     return True
 
+
 def darwin_intercept(event_type, event):
     if globals()['key_listener']._suppress:
         if not meh_pressed():
@@ -136,8 +136,10 @@ def darwin_intercept(event_type, event):
     else:
         return event
 
+
 def suppress_events(bool):
     globals()['key_listener']._suppress = bool
+
 
 def on_key_press(key):
     globals()['ignore_toggle_release'] = False
@@ -194,6 +196,7 @@ def on_key_released(key):
 
     if not meh_pressed():
         suppress_events(False)
+
 
 if platform_name == 'Darwin':
     with keyboard.Listener(on_press=on_key_press, on_release=on_key_released, darwin_intercept=darwin_intercept) as listener:

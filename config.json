@@ -1,5 +1,5 @@
 {
-  "debug": true,
+  "debug": false,
   "can_toggle": true,
   "reset_toggle": true,
   "toggle_timeout": 1.5,
