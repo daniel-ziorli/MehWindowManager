@@ -17,7 +17,24 @@
     },
     "w": {
       "title": "Slack",
+      "path": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
       "mac_path": "Slack"
+    },
+    "f": {
+      "title": "Explorer",
+      "path": "C:\\Windows\\explorer.exe"
+    },
+    "t": {
+      "title": "Discord",
+      "path": "C:\\Users\\kanno\\AppData\\Local\\Discord\\Update.exe"
+    },
+    "u": {
+      "title": "Unity",
+      "path": "C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs\\Unity 2022.3.15f1\\Unity.exe"
+    },
+    "s": {
+      "title": "Steam",
+      "path": "C:\\Program Files (x86)\\Steam\\steam.exe"
     }
   }
 }
