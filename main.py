@@ -17,7 +17,6 @@ globals()['is_meh_pressed'] = False
 globals()['ignore_toggle_release'] = False
 globals()['toggle_time'] = time.time()
 
-meh = config['meh']
 hotkeys = config['hotkeys']
 debug = config['debug']
 can_toggle = config['can_toggle']
@@ -25,6 +24,14 @@ reset_toggle = config['reset_toggle']
 toggle_timeout = config['toggle_timeout']
 platform_name = platform.system()
 if (debug): print(platform_name)
+
+meh_config = config['meh']
+if isinstance(meh_config, dict):
+    meh = meh_config.get(platform_name) or meh_config.get('default')
+    if meh is None:
+        raise ValueError(f"config 'meh' has no entry for platform '{platform_name}' and no 'default'")
+else:
+    meh = meh_config
 
 for key in list(hotkeys):
     hotkeys[keyboard.KeyCode.from_char(key)] = hotkeys[key]
@@ -110,31 +117,34 @@ def get_standard_key(p_key):
     else:
         return p_key
 
-meh_parsed_list = keyboard.HotKey.parse(meh)
-if debug: print(f"DEBUG: Raw parsed meh keys: {meh_parsed_list}")
+meh_strings = meh if isinstance(meh, list) else [meh]
 
-standard_meh_keys = set()
-for parsed_key in meh_parsed_list:
-    standard_key = get_standard_key(parsed_key)
-    standard_meh_keys.add(standard_key)
+meh_combos = []
+for meh_str in meh_strings:
+    combo = set()
+    for parsed_key in keyboard.HotKey.parse(meh_str):
+        combo.add(get_standard_key(parsed_key))
+    meh_combos.append(combo)
 
-if debug: print(f"DEBUG: Standardized meh keys for internal use: {standard_meh_keys}")
+all_meh_keys = set().union(*meh_combos)
 
-for std_key in standard_meh_keys:
+if debug: print(f"DEBUG: Standardized meh combos for internal use: {meh_combos}")
+
+for std_key in all_meh_keys:
     meh_key_presses[std_key] = False
 
 
 def meh_pressed():
     if can_toggle and globals()['is_meh_pressed']:
         return True
-    for key in meh_key_presses:
-        if not meh_key_presses[key]:
-            return False
-    if (debug): print("meh pressed")
-    return True
+    for combo in meh_combos:
+        if all(meh_key_presses[k] for k in combo):
+            if (debug): print("meh pressed")
+            return True
+    return False
 
 
-def meh_released(): 
+def meh_released():
     for key in meh_key_presses:
         if meh_key_presses[key]:
             return False
@@ -164,7 +174,7 @@ def on_key_press(key):
         reset_meh(key)
         return
 
-    if key in standard_meh_keys:
+    if key in all_meh_keys:
         meh_key_presses[key] = True
         if meh_pressed():
             suppress_events(True)
@@ -200,7 +210,7 @@ def reset_meh(key):
 def on_key_released(key):
     if debug: print(f"Released: {key}")
 
-    if key not in standard_meh_keys:
+    if key not in all_meh_keys:
         return
 
     meh_key_presses[key] = False

@@ -1,9 +1,12 @@
 {
-  "debug": false,
+  "debug": true,
   "can_toggle": true,
   "reset_toggle": true,
   "toggle_timeout": 1.5,
-  "meh": "<f20>",
+  "meh": {
+    "Darwin": ["<f20>", "<shift_r>"],
+    "Windows": ["<f20>"]
+  },
   "hotkeys": {
     "d": {
       "title": "Code",
