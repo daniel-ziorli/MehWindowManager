@@ -45,13 +45,28 @@ def cache_titles():
         print(title)
 
 
+def is_mac_app_frontmost(app_name):
+    script = f'tell application "System Events" to get name of first application process whose frontmost is true'
+    try:
+        result = subprocess.run(
+            ["/usr/bin/osascript", "-e", script],
+            capture_output=True, text=True, timeout=1
+        )
+        frontmost = result.stdout.strip()
+        if debug: print(f"frontmost app: {frontmost}, target: {app_name}")
+        return frontmost.lower() == app_name.lower()
+    except Exception as e:
+        if debug: print(f"frontmost check failed: {e}")
+        return False
+
+
 def execute_mac_hotkey(key):
     if (debug): print("execute_mac_hotkey")
     process = hotkeys[key]
     if 'mac_path' not in process.keys():
         return
 
-    if key == globals()['previous_hotkey']:
+    if key == globals()['previous_hotkey'] and is_mac_app_frontmost(process['mac_path']):
         controller.press(keyboard.Key.cmd)
         controller.tap('`')
         controller.release(keyboard.Key.cmd)
